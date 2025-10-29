@@ -25,5 +25,11 @@
       "password": "pass",
       "expire_date": "2026-06-01"
     }
+    {
+      "device_id": "1a87076d966fb3b8",
+      "username": "user",
+      "password": "pass123",
+      "expire_date": "2026-06-01"
+    }
   ]
 }
