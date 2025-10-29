@@ -24,12 +24,18 @@
       "username": "user",
       "password": "pass",
       "expire_date": "2026-06-01"
-    }
+    },
     {
       "device_id": "1a87076d966fb3b8",
       "username": "user",
       "password": "pass123",
       "expire_date": "2026-06-01"
-    }
+    },
+    {
+      "device_id": "523bfe1dc952b0e9",
+      "username": "523bfe1dc952b0e9",
+      "password": "523bfe1dc952b0e9",
+      "expire_date": "2026-06-01"
+    },
   ]
 }
