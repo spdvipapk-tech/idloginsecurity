@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spider VIP — Device List</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#0b66ff;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef6;background:linear-gradient(180deg,#07121a 0%, #071922 100%)}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--accent);text-decoration:none;cursor:pointer}
+    .btn.ghost{color:var(--muted);border-style:dashed}
+    .devices{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    .device{padding:12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.02)}
+    .device h3{margin:0 0 6px;font-size:15px}
+    .meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .small{font-size:12px;color:var(--muted)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .copy{padding:6px 8px;font-size:12px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--accent);cursor:pointer}
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:linear-gradient(180deg,#072031,#05324b);color:#dff3ff;padding:10px 14px;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.6);display:none;border:1px solid rgba(11,102,255,0.15)}
+    a.link{color:var(--accent);text-decoration:none}
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+    /* responsive */
+    @media (max-width:420px){.wrap{padding:12px} .controls{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 id="pageTitle">🔐 Welcome To Spider VIP</h1>
+        <p class="lead" id="pageDesc">Please login to continue using this app.</p>
+      </div>
+      <div class="card" style="min-width:180px;text-align:center">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Action</div>
+        <div class="controls" style="justify-content:center">
+          <button id="loginBtn" class="btn">LOGIN</button>
+          <a id="renewLink" class="btn ghost" href="#" target="_blank">Renew</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Devices</strong>
+        <div class="small">Total: <span id="deviceCount">0</span></div>
+      </div>
+
+      <div class="devices" id="deviceList" style="margin-top:12px">
+        <!-- devices rendered here -->
+      </div>
+
+      <div id="emptyNotice" class="small" style="margin-top:12px;display:none;color:var(--muted)">কোনো ডিভাইস পাওয়া যায়নি।</div>
+    </section>
+
+    <footer>
+      <div class="small">এই পেজটি `usrdata.json`-এর কন্টেন্ট ব্যবহার করে তৈরি করা হয়েছে।</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">✅ Successfully Logged In!</div>
+
+  <script>
+    /***********************
+     * এখানে তোমার দেয়া JSON
+     * (যদি আলাদা ফাইল থাকে, ঐ ফাইল fetch করে নিতে পারো)
+     ***********************/
+    const data = {
+      "showDialog": true,
+      "title": "🔐 Welcome To Spider VIP",
+      "description": "Please login to continue using this app.",
+      "button": "LOGIN",
+      "toast": "✅ Successfully Logged In!",
+      "renewUrl": "https://wa.me/97335653381",
+      "devices": [
+        {
+          "device_id": "591a2a49ce8ca4dc",
+          "username": "dpmods",
+          "password": "12345",
+          "expire_date": "2025-10-20"
+        },
+        {
+          "device_id": "abcdef9876543210",
+          "username": "demo",
+          "password": "demo123",
+          "expire_date": "2026-04-15"
+        },
+        {
+          "device_id": "testdevice11223344",
+          "username": "user",
+          "password": "pass",
+          "expire_date": "2026-06-01"
+        },
+        {
+          "device_id": "1a87076d966fb3b8",
+          "username": "user",
+          "password": "pass123",
+          "expire_date": "2026-06-01"
+        },
+        {
+          "device_id": "523bfe1dc952b0e9",
+          "username": "523bfe1dc952b0e9",
+          "password": "523bfe1dc952b0e9",
+          "expire_date": "2026-06-01"
+        }
+      ]
+    };
+
+    // init UI text
+    document.getElementById('pageTitle').textContent = data.title || 'Title';
+    document.getElementById('pageDesc').textContent = data.description || '';
+    document.getElementById('loginBtn').textContent = data.button || 'LOGIN';
+    const renew = document.getElementById('renewLink');
+    renew.href = data.renewUrl || '#';
+    renew.textContent = 'Contact/ renew';
+
+    // render devices
+    const container = document.getElementById('deviceList');
+    const deviceCount = document.getElementById('deviceCount');
+    function renderDevices(list){
+      container.innerHTML = '';
+      if (!Array.isArray(list) || list.length === 0) {
+        document.getElementById('emptyNotice').style.display = 'block';
+        deviceCount.textContent = '0';
+        return;
+      }
+      document.getElementById('emptyNotice').style.display = 'none';
+      deviceCount.textContent = String(list.length);
+
+      list.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'device';
+        el.innerHTML = `
+          <h3>${escapeHtml(d.username || d.device_id)}</h3>
+          <div class="meta">Device ID: <strong>${escapeHtml(d.device_id)}</strong></div>
+          <div class="small">Password: <code>${escapeHtml(d.password)}</code></div>
+          <div class="small">Expire: ${escapeHtml(d.expire_date || '—')}</div>
+          <div style="margin-top:8px" class="row">
+            <button class="copy" data-copy="${escapeHtml(d.username)}|${escapeHtml(d.password)}">Copy creds</button>
+            <button class="copy" data-copy-id="${escapeHtml(d.device_id)}">Copy device id</button>
+            <a class="btn" href="${data.renewUrl || '#'}" target="_blank">Renew</a>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+
+      // attach handlers
+      container.querySelectorAll('button.copy').forEach(btn=>{
+        btn.addEventListener('click', async (ev)=>{
+          const cred = btn.getAttribute('data-copy');
+          const id = btn.getAttribute('data-copy-id');
+          try {
+            if (cred) {
+              await navigator.clipboard.writeText(cred);
+              showToast('Copied credentials: ' + cred);
+            } else if (id) {
+              await navigator.clipboard.writeText(id);
+              showToast('Copied device id: ' + id);
+            }
+          } catch(e){
+            showToast('Copy failed — ' + (e.message||e));
+          }
+        });
+      });
+    }
+
+    renderDevices(data.devices);
+
+    // login button behaviour (demo)
+    document.getElementById('loginBtn').addEventListener('click', ()=>{
+      if (data.toast) showToast(data.toast);
+      else showToast('Logged in');
+    });
+
+    // toast
+    const toastEl = document.getElementById('toast');
+    let toastTimer = null;
+    function showToast(msg){
+      toastEl.textContent = msg;
+      toastEl.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>{ toastEl.style.display = 'none'; }, 3000);
+    }
+
+    // small helper
+    function escapeHtml(text){
+      if (text === null || text === undefined) return '';
+      return String(text)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // Optional: if তুমি JSON আলাদা ফাইলে রাখতে চাও (usrdata.json),
+    // তাহলে এই পেজে উপরের data পরিবর্তে fetch দিয়ে লোড করো:
+    //
+    // fetch('usrdata.json').then(r=>r.json()).then(d=>{
+    //   // set data and renderDevices(d.devices)
+    // });
+  </script>
+</body>
+</html>
